@@ -44,7 +44,11 @@
         .btn-outline { background: transparent; border: 2px solid #ccc; color: #666; }
         .btn-cancel { background-color: #e74c3c; color: white; margin-top: 10px; }
 
-        /* BARRA DE PROGRESO */
+        /* ESTILOS PAGO */
+        .price-tag { font-size: 2rem; font-weight: bold; color: var(--primary); text-align: center; margin: 10px 0; }
+        .bank-info { background: #f9f9f9; padding: 15px; border-radius: 8px; border: 1px dashed #ccc; font-family: monospace; margin-bottom: 15px; font-size: 0.9rem; }
+        
+        /* ESTILOS BARRA */
         .progress-container { background: #eee; height: 20px; border-radius: 10px; overflow: hidden; margin: 10px 0; position: relative; }
         .progress-fill { height: 100%; border-radius: 10px; transition: width 1s ease-in-out; width: 0%; display: flex; align-items: center; justify-content: flex-end; }
         .progress-text { position: absolute; width: 100%; text-align: center; line-height: 20px; font-size: 0.8rem; font-weight: bold; color: #555; }
@@ -68,8 +72,8 @@
                 <li>Regalo cada 10 sacos</li>
                 <li>Acceso anticipado 48h</li>
             </ul>
-            <button onclick="abrirFormularioRegistro('classic')" class="btn btn-classic">
-                Registrarme en Classic
+            <button onclick="irAPago('classic')" class="btn btn-classic">
+                Obtener Classic - $2.000
             </button>
         </div>
 
@@ -77,16 +81,59 @@
             <h2 style="color: #b7950b;">👑 Membresía Élite</h2>
             <ul>
                 <li>10% Descuento Permanente</li>
-                <li>Sorteos Mensuales</li>
-                <li>3 Reposiciones Gratis</li>
+                <li>Sorteos Mensuales & Regalos</li>
+                <li>3 Reposiciones GRATIS</li>
             </ul>
-            <button onclick="abrirFormularioRegistro('elite')" class="btn btn-elite">
-                Registrarme en Élite
+            <button onclick="irAPago('elite')" class="btn btn-elite">
+                Obtener Élite - $5.000
             </button>
         </div>
 
         <div style="text-align: center; margin-top: 30px; color: #999; font-size: 0.9rem;">
             <p>¿Ya tienes tu tarjeta? <br>Acerca tu celular a ella ahora.</p>
+        </div>
+    </div>
+</div>
+
+<div id="view-pago" class="hidden">
+    <header>
+        <h1>Pago Requerido</h1>
+        <p>Confirma tu suscripción</p>
+    </header>
+    <div class="container">
+        <div class="card">
+            <h2 id="pago-titulo">Membresía...</h2>
+            <p style="text-align: center; color: #666;">Para activar tu tarjeta, realiza el pago único de:</p>
+            
+            <div class="price-tag" id="pago-precio">$0</div>
+
+            <div class="bank-info">
+                <p><strong>Banco:</strong> Estado (Cuenta RUT)</p>
+                <p><strong>N° Cuenta:</strong> 12345678</p>
+                <p><strong>RUT:</strong> 11.222.333-K</p>
+                <p><strong>Nombre:</strong> Pets & Jack</p>
+                <p><strong>Email:</strong> pagos@petsjack.cl</p>
+            </div>
+
+            <div style="background: #e8f6f3; padding:15px; border-radius:8px; border-left: 5px solid #2ecc71; margin-bottom: 20px;">
+                <p style="margin:0; font-size:0.9rem;"><strong>PASO 1:</strong> Envía el comprobante por WhatsApp para recibir tu <strong>Código de Activación</strong>.</p>
+                <button onclick="notificarPagoWhatsApp()" class="btn btn-whatsapp" style="font-size:0.9rem; padding:10px;">
+                    📱 Enviar Comprobante
+                </button>
+            </div>
+
+            <div style="border-top: 1px solid #eee; padding-top:15px;">
+                <p style="margin:0 0 10px 0; font-size:0.9rem;"><strong>PASO 2:</strong> Ingresa el código que te dimos:</p>
+                <input type="text" id="input-codigo-verificacion" class="input-field" placeholder="Ingresa el código aquí..." style="text-align: center; letter-spacing: 2px; font-weight: bold; text-transform: uppercase;">
+                
+                <button onclick="verificarCodigoPago()" class="btn btn-classic" style="background: var(--primary);">
+                    🔓 Validar y Registrarse
+                </button>
+            </div>
+            
+            <button onclick="cancelarRegistro()" class="btn btn-cancel">
+                Cancelar
+            </button>
         </div>
     </div>
 </div>
@@ -99,7 +146,7 @@
     <div class="container">
         <div class="card">
             <h2 id="titulo-registro">Registro Nuevo Socio</h2>
-            <p style="margin-bottom:20px; color:#666;">Estás a un paso de obtener tus beneficios.</p>
+            <p style="margin-bottom:20px; color:#2ecc71; font-weight:bold;">✅ Código Correcto. Completa tus datos:</p>
             
             <div class="input-group">
                 <label>Nombre Completo:</label>
@@ -115,7 +162,7 @@
                 Confirmar y Crear ID
             </button>
             <button onclick="cancelarRegistro()" class="btn btn-outline">
-                Cancelar
+                Volver
             </button>
         </div>
     </div>
@@ -190,11 +237,10 @@
 </div>
 
 <script type="module">
-    // --- CONFIGURACIÓN FIREBASE ---
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getFirestore, doc, getDoc, addDoc, collection } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-    // ⚠️ CONFIGURACIÓN REAL (AGREGADA) ⚠️
+    // --- CONFIGURACIÓN REAL DE FIREBASE ---
     const firebaseConfig = {
         apiKey: "AIzaSyCj49Ndnx5dzoSnOd60hGddI3t4ElFl_Vk",
         authDomain: "petsjack.firebaseapp.com",
@@ -208,85 +254,83 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    // VARIABLES GLOBALES
+    // VARIABLES
     window.WHATSAPP_TIENDA = "56993525112"; 
     window.LINK_INSTAGRAM = "https://www.instagram.com/pets.jackk/";
+    
+    // ¡¡ESTE ES EL CÓDIGO QUE TÚ LE DAS AL CLIENTE POR WHATSAPP!!
+    // Puedes cambiarlo cuando quieras.
+    const CODIGO_SECRETO_ACTIVACION = "PETS2024"; 
+
     let currentId = null;
     let registroTipoSeleccionado = 'classic';
+    
+    const PLANES = {
+        classic: { nombre: "Classic 🔵", precio: 2000 },
+        elite: { nombre: "Élite 👑", precio: 5000 }
+    };
 
-    // --- INICIO DE LA APP ---
     window.onload = async function() {
         const params = new URLSearchParams(window.location.search);
         const idUsuario = params.get('id');
 
-        // Ocultar todo
         ocultarTodo();
 
         if(idUsuario) {
-            // Si hay ID en la URL, cargamos al usuario
             currentId = idUsuario;
             cargarUsuario(idUsuario);
         } else {
-            // Si no hay ID, mostramos la vista pública para elegir/registrar
             document.getElementById('view-public').classList.remove('hidden');
         }
     };
 
     function ocultarTodo() {
         document.getElementById('view-public').classList.add('hidden');
+        document.getElementById('view-pago').classList.add('hidden');
         document.getElementById('view-registro').classList.add('hidden');
         document.getElementById('view-classic').classList.add('hidden');
         document.getElementById('view-elite').classList.add('hidden');
     }
 
-    async function cargarUsuario(id) {
-        // Mostrar mensaje de carga
-        document.getElementById('display-id-classic').innerText = "Cargando...";
-        document.getElementById('display-id-elite').innerText = "Cargando...";
+    // --- FLUJO DE PAGO Y VERIFICACIÓN ---
+    window.irAPago = function(tipo) {
+        registroTipoSeleccionado = tipo;
+        const plan = PLANES[tipo];
 
-        try {
-            const docRef = doc(db, "clientes", id);
-            const docSnap = await getDoc(docRef);
+        // Resetear input
+        document.getElementById('input-codigo-verificacion').value = "";
 
-            if (docSnap.exists()) {
-                const data = docSnap.data();
-                const tipo = data.tipo || 'classic';
-                
-                // Mostrar ID visible (recortado)
-                let idVisible = id.substring(0, 8).toUpperCase();
-                document.getElementById('display-id-classic').innerText = idVisible;
-                document.getElementById('display-id-elite').innerText = idVisible;
+        document.getElementById('pago-titulo').innerText = `Membresía ${plan.nombre}`;
+        document.getElementById('pago-precio').innerText = `$${plan.precio.toLocaleString('es-CL')}`;
+        
+        ocultarTodo();
+        document.getElementById('view-pago').classList.remove('hidden');
+    }
 
-                // Saludo personalizado
-                if(data.nombre) {
-                    document.getElementById('saludo-classic').innerText = `Hola, ${data.nombre}`;
-                    document.getElementById('saludo-elite').innerText = `Hola, ${data.nombre}`;
-                }
+    window.notificarPagoWhatsApp = function() {
+        const plan = PLANES[registroTipoSeleccionado];
+        const msg = `Hola! Acabo de transferir $${plan.precio} por la Membresía ${plan.nombre}. Adjunto mi comprobante. Quedo atento al CÓDIGO DE ACTIVACIÓN.`;
+        conectarWhatsApp(msg);
+    }
 
-                actualizarGraficos(data.sacos || 0);
+    window.verificarCodigoPago = function() {
+        const input = document.getElementById('input-codigo-verificacion');
+        const codigoIngresado = input.value.trim().toUpperCase(); // Convertir a mayúsculas
 
-                // Mostrar la vista correspondiente
-                if (tipo === 'elite') {
-                    document.getElementById('view-elite').classList.remove('hidden');
-                } else {
-                    document.getElementById('view-classic').classList.remove('hidden');
-                }
-
-            } else {
-                alert("ID no encontrado. Regístrate nuevamente.");
-                document.getElementById('view-public').classList.remove('hidden');
-            }
-        } catch (error) {
-            console.error("Error:", error);
-            alert("Error de conexión. Verifica tu internet.");
+        if (codigoIngresado === CODIGO_SECRETO_ACTIVACION) {
+            // ¡CÓDIGO CORRECTO!
+            abrirFormularioRegistro();
+        } else {
+            // ERROR
+            alert("⛔ CÓDIGO INCORRECTO\n\nDebes enviar el comprobante por WhatsApp para que te entreguemos el código de activación.");
+            input.value = "";
+            input.focus();
         }
     }
 
-    // --- FUNCIONES DE REGISTRO ---
-
-    window.abrirFormularioRegistro = function(tipo) {
-        registroTipoSeleccionado = tipo; 
-        
+    // --- FLUJO DE REGISTRO ---
+    window.abrirFormularioRegistro = function() {
+        const tipo = registroTipoSeleccionado;
         const titulo = document.getElementById('titulo-registro');
         titulo.innerText = tipo === 'elite' ? 'Registro Socio Élite 👑' : 'Registro Socio Classic 🔵';
         
@@ -309,31 +353,69 @@
             return;
         }
 
-        btn.innerText = "Guardando...";
+        btn.innerText = "Creando...";
         btn.disabled = true;
 
         try {
-            // GUARDAR EN FIREBASE
             const docRef = await addDoc(collection(db, "clientes"), {
                 nombre: nombre,
                 telefono: telefono,
                 tipo: registroTipoSeleccionado,
                 sacos: 0, 
-                fecha_registro: new Date()
+                fecha_registro: new Date(),
+                pago_validado: true // Marca de seguridad
             });
 
-            alert(`¡Registro Exitoso! Tu ID es: ${docRef.id}`);
+            alert(`¡BIENVENIDO! Tu Tarjeta Virtual está lista.\nID: ${docRef.id}`);
             window.location.href = `?id=${docRef.id}`;
 
         } catch (e) {
             console.error("Error al registrar: ", e);
-            alert("Hubo un error al guardar. Intenta de nuevo.");
+            alert("Error al guardar. Verifica tu conexión.");
             btn.innerText = "Confirmar y Crear ID";
             btn.disabled = false;
         }
     }
 
-    // --- LÓGICA GRÁFICA Y UTILIDADES ---
+    // --- CARGAR USUARIO Y GRÁFICOS ---
+    async function cargarUsuario(id) {
+        document.getElementById('display-id-classic').innerText = "Cargando...";
+        document.getElementById('display-id-elite').innerText = "Cargando...";
+
+        try {
+            const docRef = doc(db, "clientes", id);
+            const docSnap = await getDoc(docRef);
+
+            if (docSnap.exists()) {
+                const data = docSnap.data();
+                const tipo = data.tipo || 'classic';
+                
+                let idVisible = id.substring(0, 8).toUpperCase();
+                document.getElementById('display-id-classic').innerText = idVisible;
+                document.getElementById('display-id-elite').innerText = idVisible;
+
+                if(data.nombre) {
+                    document.getElementById('saludo-classic').innerText = `Hola, ${data.nombre}`;
+                    document.getElementById('saludo-elite').innerText = `Hola, ${data.nombre}`;
+                }
+
+                actualizarGraficos(data.sacos || 0);
+
+                if (tipo === 'elite') {
+                    document.getElementById('view-elite').classList.remove('hidden');
+                } else {
+                    document.getElementById('view-classic').classList.remove('hidden');
+                }
+
+            } else {
+                alert("ID no encontrado o incorrecto.");
+                document.getElementById('view-public').classList.remove('hidden');
+            }
+        } catch (error) {
+            console.error("Error:", error);
+            alert("Error de conexión.");
+        }
+    }
 
     function actualizarGraficos(n) {
         n = parseInt(n) || 0;
