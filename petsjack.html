@@ -2,176 +2,225 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Club Pets & Jack</title>
     <style>
-        /* ESTILOS BASE */
-        :root { --primary: #2c3e50; --classic: #3498db; --elite: #f1c40f; --bg: #f4f6f7; }
-        body { font-family: 'Arial', sans-serif; margin: 0; padding: 0; background-color: var(--bg); color: #333; }
-        header { background: var(--primary); color: white; padding: 1rem; text-align: center; }
-        .container { max-width: 800px; margin: 0 auto; padding: 20px; }
-        
-        /* TARJETAS */
-        .card { background: white; padding: 20px; margin-bottom: 20px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        
-        /* BOTONES (Ahora son enlaces <a>) */
-        .btn { 
-            display: block; 
-            width: 100%; 
-            padding: 12px 0; 
-            margin: 10px 0; 
-            border: none; 
-            border-radius: 8px; 
-            font-weight: bold; 
-            color: white; 
-            text-align: center; 
-            text-decoration: none; 
-            cursor: pointer; 
-            box-sizing: border-box;
-            font-size: 16px;
+        /* ESTILOS VISUALES (DISEÑO) */
+        :root {
+            --primary: #2c3e50; /* Azul Oscuro Corporativo */
+            --classic: #3498db; /* Azul Classic */
+            --elite: #f1c40f;   /* Dorado Élite */
+            --bg: #f4f6f7;
+            --text: #333;
         }
-        .btn-classic { background-color: var(--classic); }
-        .btn-elite { background-color: var(--elite); color: #333; }
-        .btn-whatsapp { background-color: #25D366; }
-        .btn-insta { background-color: #E1306C; }
-        .btn-outline { background: transparent; border: 2px solid #999; color: #666; }
+        body { font-family: 'Helvetica', 'Arial', sans-serif; margin: 0; padding: 0; background-color: var(--bg); color: var(--text); -webkit-font-smoothing: antialiased; }
+        
+        /* CABECERA */
+        header { background: var(--primary); color: white; padding: 1.5rem 1rem; text-align: center; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        header h1 { margin: 0; font-size: 1.5rem; }
+        header p { margin: 5px 0 0; opacity: 0.9; font-size: 0.9rem; }
 
-        /* BADGES Y UTILIDADES */
-        .promo-badge { background: #e74c3c; color: white; padding: 5px 10px; border-radius: 20px; font-size: 0.8rem; text-transform: uppercase; }
+        /* CONTENEDOR PRINCIPAL */
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+
+        /* TARJETAS DE CONTENIDO */
+        .card { background: white; padding: 20px; margin-bottom: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); transition: transform 0.2s; }
+        .card:active { transform: scale(0.98); } /* Efecto al tocar en celular */
+        
+        h2 { font-size: 1.3rem; margin-top: 0; display: flex; align-items: center; gap: 10px; }
+        h3 { font-size: 1.1rem; margin-top: 0; margin-bottom: 10px; }
+        p { color: #666; line-height: 1.5; margin-bottom: 15px; }
+
+        /* BOTONES FUNCIONALES */
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 14px 0;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            text-align: center;
+            text-decoration: none;
+            font-size: 16px;
+            cursor: pointer;
+            transition: opacity 0.2s;
+            box-sizing: border-box;
+            margin-top: 10px;
+        }
+        .btn:hover { opacity: 0.9; }
+        
+        /* Colores de botones */
+        .btn-classic { background-color: var(--classic); color: white; box-shadow: 0 4px 10px rgba(52, 152, 219, 0.3); }
+        .btn-elite { background-color: var(--elite); color: #333; box-shadow: 0 4px 10px rgba(241, 196, 15, 0.4); }
+        .btn-whatsapp { background-color: #25D366; color: white; }
+        .btn-insta { background: linear-gradient(45deg, #405de6, #5851db, #833ab4, #c13584, #e1306c, #fd1d1d); color: white; }
+        .btn-outline { background: transparent; border: 2px solid #ccc; color: #666; }
+
+        /* BARRA DE PROGRESO */
+        .progress-bar { background: #eee; height: 15px; border-radius: 10px; overflow: hidden; margin-bottom: 5px; }
+        .progress-fill { height: 100%; border-radius: 10px; transition: width 1s ease-in-out; }
+
+        /* ETIQUETAS */
+        .badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: bold; text-transform: uppercase; margin-bottom: 10px; }
+        .badge-red { background: #e74c3c; color: white; }
+        .badge-gold { background: #f1c40f; color: #333; }
+
+        /* UTILIDAD PARA OCULTAR */
         .hidden { display: none !important; }
-        h2, h3 { margin-top: 0; }
     </style>
 </head>
 <body>
 
 <script>
-    // Poner aquí el número de la tienda (formato internacional sin +)
-    const TELEFONO_TIENDA = "56912345678"; 
+    // 1. TU WHATSAPP: (Formato internacional sin el +). Ej: 56912345678
+    const WHATSAPP_TIENDA = "56912345678"; 
+
+    // 2. TU INSTAGRAM O WEB DE CONCURSOS:
+    const LINK_SORTEOS = "https://instagram.com/petsandjack";
     
-    // Poner aquí el link de tu Instagram o donde se hagan los sorteos
-    const LINK_SORTEOS = "https://instagram.com/petsandjack"; 
-    
-    // Poner aquí el link a tu tienda online (si tienes)
-    const LINK_TIENDA = "https://petsandjack.cl/tienda";
+    // 3. TU CATÁLOGO O LINK DE COMPRA WEB (Si no tienes, deja el de WhatsApp):
+    const LINK_TIENDA = "https://petsandjack.cl"; 
 </script>
 
-
-<div id="public-section" class="hidden">
+<div id="view-public" class="hidden">
     <header>
-        <h1>Pets & Jack Membership</h1>
-        <p>Acerca tu tarjeta NFC para entrar</p>
+        <h1>Pets & Jack</h1>
+        <p>Sistema de Membresías</p>
     </header>
     <div class="container">
+        <div class="card" style="text-align: center;">
+            <div style="font-size: 3rem;">💳</div>
+            <h2>Bienvenido</h2>
+            <p>Para acceder a tus beneficios exclusivos, acerca tu celular a tu tarjeta de membresía.</p>
+            <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;">
+            <p style="font-size: 0.9rem;">¿No tienes tarjeta? Solicítala en el mesón.</p>
+            <a href="#" onclick="conectarWhatsApp('Hola, me interesa comprar una membresía Pets & Jack')" class="btn btn-whatsapp">Pedir Info por WhatsApp</a>
+        </div>
+    </div>
+</div>
+
+
+<div id="view-classic" class="hidden">
+    <header style="background: var(--classic);">
+        <h1>Socio Classic 🐶</h1>
+        <p>Membresía Activa</p>
+    </header>
+
+    <div class="container">
+        <div class="card" style="border-left: 5px solid var(--classic);">
+            <h2>🔹 Tu Estatus</h2>
+            <p>Tienes un <strong>5% de descuento</strong> permanente en tienda y accesorios.</p>
+        </div>
+
         <div class="card">
-            <h2>Únete al Club</h2>
-            <p>Obtén descuentos y regalos exclusivos.</p>
-            <a href="#" onclick="irAWhatsapp('Hola, quiero comprar una membresía')" class="btn btn-whatsapp">Comprar Membresía</a>
+            <h3>🎁 Regalo cada 10 Sacos</h3>
+            <p>Llevas 7 de 10 sacos acumulados.</p>
+            <div class="progress-bar"><div class="progress-fill" style="width: 70%; background: var(--classic);"></div></div>
+            <p style="font-size: 0.8rem; margin-top: 5px; color: #999;">Faltan 3 para tu premio.</p>
+            
+            <a href="#" onclick="conectarWhatsApp('Hola, soy Socio Classic. Quiero comprar un saco de comida y sumar mis puntos.')" class="btn btn-classic">
+                🛒 Comprar Saco (+Puntos)
+            </a>
         </div>
+
+        <div class="card">
+            <span class="badge badge-red">Exclusivo 48h antes</span>
+            <h3>Ofertas Flash</h3>
+            <p>Accede a las promociones antes que el público general.</p>
+            <a href="#" onclick="irATienda()" class="btn btn-outline">Ver Catálogo Web</a>
+        </div>
+
+        <button onclick="cerrarSesion()" style="background:none; border:none; color:#999; width:100%; padding:20px; cursor:pointer;">Cerrar Sesión</button>
     </div>
 </div>
 
 
-<div id="vitrina-classic" class="container hidden">
-    <div class="card" style="border-top: 5px solid var(--classic);">
-        <h2 style="color: var(--classic)">🐶 Socio Classic</h2>
-        <p>✅ <strong>5% Descuento</strong> activo en caja.</p>
-    </div>
+<div id="view-elite" class="hidden">
+    <header style="background: #b7950b; color: #fff;">
+        <h1>Socio Élite 👑</h1>
+        <p>Categoría VIP</p>
+    </header>
 
-    <div class="card">
-        <h3>🎁 Tu meta: Regalo cada 10 sacos</h3>
-        <p>Llevas 7 de 10 comprados.</p>
-        <div style="background:#eee; height: 20px; border-radius:10px; width: 100%; margin-bottom: 15px;">
-            <div style="background: var(--classic); width: 70%; height: 100%; border-radius:10px;"></div>
+    <div class="container">
+        <div class="card" style="border-left: 5px solid var(--elite);">
+            <h2>👑 Beneficios VIP</h2>
+            <p>Disfrutas de <strong>10% de descuento</strong> en todo y atención prioritaria.</p>
         </div>
-        <a href="#" onclick="irAWhatsapp('Hola, soy Socio Classic. Quiero comprar un saco y sumar puntos.')" class="btn btn-classic">
-            🛒 Comprar Saco (+Puntos)
-        </a>
+
+        <div class="card" style="background: linear-gradient(to right, #fff, #fffcf0);">
+            <h3>🎉 Sorteo Mensual</h3>
+            <p>Este mes sorteamos <strong>1 Año de Comida Gratis</strong>. Como socio Élite ya estás participando.</p>
+            <a href="#" onclick="irASorteos()" class="btn btn-insta">
+                📸 Ver Sorteo en Instagram
+            </a>
+        </div>
+
+        <div class="card">
+            <span class="badge badge-gold">Envío Prioritario</span>
+            <h3>Compra Rápida VIP</h3>
+            <p>Haz tu pedido sin filas y con tu 10% OFF aplicado.</p>
+            <a href="#" onclick="conectarWhatsApp('Hola, soy Socio Élite VIP. Quiero hacer un pedido con envío prioritario y mi 10% de descuento.')" class="btn btn-elite">
+                ⚡ Pedir Comida Ahora
+            </a>
+        </div>
+
+        <div class="card">
+            <h3>💳 Garantía de Tarjeta</h3>
+            <p>¿La perdiste? Tienes <strong>3 reposiciones gratis</strong> al año.</p>
+            <a href="#" onclick="conectarWhatsApp('Hola, soy Socio Élite. Necesito solicitar una reposición de mi tarjeta (Beneficio Gratuito).')" class="btn btn-outline" style="font-size: 0.9rem;">
+                Solicitar Reposición
+            </a>
+        </div>
+
+        <button onclick="cerrarSesion()" style="background:none; border:none; color:#999; width:100%; padding:20px; cursor:pointer;">Cerrar Sesión</button>
     </div>
-
-    <div class="card">
-        <span class="promo-badge">Acceso 48h antes</span>
-        <h3>Oferta Flash Semanal</h3>
-        <p>Descuento en correas y arneses.</p>
-        <a href="#" onclick="irATienda()" class="btn btn-outline">Ver productos en web</a>
-    </div>
-    
-    <button onclick="cerrarSesion()" class="btn" style="background:#ccc; color:#333">Cerrar Sesión</button>
-</div>
-
-
-<div id="vitrina-elite" class="container hidden">
-    <div class="card" style="border-top: 5px solid var(--elite);">
-        <h2 style="color: #b7950b">👑 Socio Élite VIP</h2>
-        <p>✅ <strong>10% Descuento</strong> permanente.</p>
-    </div>
-
-    <div class="card" style="background: #fffvf0;">
-        <h3>🎉 Sorteo Mensual Activo</h3>
-        <p>Participas por 1 año de comida gratis.</p>
-        <a href="#" onclick="irASorteo()" class="btn btn-insta">
-            🏆 Ver Sorteo en Instagram
-        </a>
-    </div>
-
-    <div class="card">
-        <span class="promo-badge">Prioridad en Reparto</span>
-        <h3>Haz tu pedido VIP</h3>
-        <p>Envío prioritario y descuento aplicado.</p>
-        <a href="#" onclick="irAWhatsapp('Hola, soy Socio Elite. Quiero hacer un pedido con mi 10% de descuento.')" class="btn btn-elite">
-            🛒 Pedir Comida (10% OFF)
-        </a>
-    </div>
-
-    <div class="card">
-        <h3>💳 Gestión de Tarjeta</h3>
-        <p>Tienes <strong>3 reposiciones gratis</strong>.</p>
-        <a href="#" onclick="irAWhatsapp('Hola, perdí mi tarjeta Elite. Quiero solicitar mi reposición gratuita.')" class="btn btn-outline">
-            Solicitar nueva tarjeta
-        </a>
-    </div>
-
-    <button onclick="cerrarSesion()" class="btn" style="background:#ccc; color:#333">Cerrar Sesión</button>
 </div>
 
 
 <script>
-    // Función para detectar URL al inicio
+    // 1. DETECTAR TIPO DE SOCIO AL CARGAR
     window.onload = function() {
+        // Leemos la URL buscando ?socio=...
         const params = new URLSearchParams(window.location.search);
-        const tipoSocio = params.get('socio');
+        const tipo = params.get('socio');
 
-        if (tipoSocio === 'classic') {
-            document.getElementById('vitrina-classic').classList.remove('hidden');
-        } else if (tipoSocio === 'elite') {
-            document.getElementById('vitrina-elite').classList.remove('hidden');
+        // Ocultamos todo primero
+        document.getElementById('view-public').classList.add('hidden');
+        document.getElementById('view-classic').classList.add('hidden');
+        document.getElementById('view-elite').classList.add('hidden');
+
+        // Mostramos según la tarjeta
+        if (tipo === 'classic') {
+            document.getElementById('view-classic').classList.remove('hidden');
+        } else if (tipo === 'elite') {
+            document.getElementById('view-elite').classList.remove('hidden');
         } else {
-            document.getElementById('public-section').classList.remove('hidden');
+            // Si no hay código, mostramos la portada pública
+            document.getElementById('view-public').classList.remove('hidden');
         }
     };
 
-    // Función para generar links de WhatsApp dinámicos
-    function irAWhatsapp(mensaje) {
-        // Crea un link que abre la app de WhatsApp con el texto listo
-        const url = `https://wa.me/${56953833920}?text=${encodeURIComponent(mensaje)}`;
+    // 2. FUNCIONES DE REDIRECCIÓN
+    function conectarWhatsApp(mensaje) {
+        // Limpia el número y crea el link
+        let numero = WHATSAPP_TIENDA.replace(/\D/g,''); // Quita símbolos si los hubiere
+        let url = `https://wa.me/${numero}?text=${encodeURIComponent(mensaje)}`;
         window.open(url, '_blank');
     }
 
-    // Redirección a Instagram/Sorteos
-    function irASorteo() {
+    function irASorteos() {
         window.open(LINK_SORTEOS, '_blank');
     }
 
-    // Redirección a Tienda Web
     function irATienda() {
         window.open(LINK_TIENDA, '_blank');
     }
 
     function cerrarSesion() {
+        // Borra el parámetro ?socio de la URL
         window.location.href = window.location.pathname;
     }
 </script>
 
 </body>
-
 </html>
-
