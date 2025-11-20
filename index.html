@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Club Pets & Jack</title>
+    <style>
+        /* ESTILOS VISUALES */
+        :root { --primary: #2c3e50; --classic: #3498db; --elite: #f1c40f; --bg: #f4f6f7; --text: #333; }
+        body { font-family: 'Helvetica', 'Arial', sans-serif; margin: 0; padding: 0; background-color: var(--bg); color: var(--text); }
+        header { background: var(--primary); color: white; padding: 1.5rem 1rem; text-align: center; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        .card { background: white; padding: 20px; margin-bottom: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        h2, h3 { margin-top: 0; }
+        
+        /* BOTONES */
+        .btn { display: block; width: 100%; padding: 14px 0; border: none; border-radius: 8px; font-weight: bold; text-align: center; text-decoration: none; font-size: 16px; cursor: pointer; margin-top: 10px; box-sizing: border-box; }
+        .btn-classic { background-color: var(--classic); color: white; }
+        .btn-elite { background-color: var(--elite); color: #333; }
+        .btn-whatsapp { background-color: #25D366; color: white; }
+        .btn-insta { background: linear-gradient(45deg, #405de6, #5851db, #833ab4, #c13584, #e1306c, #fd1d1d); color: white; }
+        .btn-outline { background: transparent; border: 2px solid #ccc; color: #666; }
+
+        /* BARRA DE PROGRESO */
+        .progress-container { background: #eee; height: 20px; border-radius: 10px; overflow: hidden; margin: 10px 0; position: relative; }
+        .progress-fill { height: 100%; border-radius: 10px; transition: width 1s ease-in-out; width: 0%; display: flex; align-items: center; justify-content: flex-end; }
+        .progress-text { position: absolute; width: 100%; text-align: center; line-height: 20px; font-size: 0.8rem; font-weight: bold; color: #555; }
+        
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+<script>
+    // DATOS DE LA TIENDA
+    const WHATSAPP_TIENDA = "56953833920"; 
+    const LINK_SORTEOS = "https://www.instagram.com/pets.jackk/";
+    
+    // LISTA DE CLIENTES Y SUS SACOS
+    // Formato: 'ID_EN_TARJETA': CANTIDAD_SACOS
+    const BASE_DE_DATOS = {
+        'cliente_01': 2,   // Este cliente lleva 2 sacos
+        'cliente_02': 5,   // Este lleva 5
+        'cliente_03': 9,   // ¡Casi llega al premio!
+        'vip_juan': 1,     
+        'vip_maria': 8
+        // ... Agrega aquí más clientes cuando entregues tarjetas nuevas
+    };
+</script>
+<div id="view-public" class="hidden">
+    <header><h1>Pets & Jack</h1><p>Acerca tu tarjeta para ver tus sacos</p></header>
+    <div class="container"><div class="card"><h2>Bienvenido</h2><p>Sistema de fidelización.</p></div></div>
+</div>
+
+<div id="view-classic" class="hidden">
+    <header style="background: var(--classic);"><h1>Socio Classic 🐶</h1></header>
+    <div class="container">
+        <div class="card">
+            <h3>🎁 Tu Progreso de Sacos</h3>
+            <p id="texto-sacos-classic">Cargando...</p> 
+            
+            <div class="progress-container">
+                <span class="progress-text" id="label-barra-classic">0/10</span>
+                <div class="progress-fill" id="barra-classic" style="background: var(--classic);"></div>
+            </div>
+            
+            <p style="font-size:0.8rem; color:#999;" id="mensaje-falta-classic">...</p>
+
+            <a href="#" onclick="conectarWhatsApp('Hola, soy Socio Classic (ID: ' + currentId + '). Quiero registrar un nuevo saco.')" class="btn btn-classic">🛒 Registrar Nuevo Saco</a>
+        </div>
+        <button onclick="cerrar()" class="btn btn-outline">Salir</button>
+    </div>
+</div>
+
+<div id="view-elite" class="hidden">
+    <header style="background: #b7950b; color:#fff"><h1>Socio Élite 👑</h1></header>
+    <div class="container">
+        <div class="card" style="border-left:5px solid var(--elite)">
+            <h2>10% Descuento Activo</h2>
+            <p>Eres cliente VIP.</p>
+        </div>
+        
+        <div class="card">
+            <h3>🎁 Progreso VIP</h3>
+            <p id="texto-sacos-elite">Cargando...</p>
+            <div class="progress-container">
+                <span class="progress-text" id="label-barra-elite">0/10</span>
+                <div class="progress-fill" id="barra-elite" style="background: var(--elite);"></div>
+            </div>
+             <a href="#" onclick="conectarWhatsApp('Hola, soy Socio Elite (ID: ' + currentId + '). Quiero registrar un nuevo saco.')" class="btn btn-elite">🛒 Registrar Nuevo Saco</a>
+        </div>
+
+        <div class="card">
+            <h3>🎉 Sorteos</h3>
+            <a href="#" onclick="window.open(LINK_SORTEOS)" class="btn btn-insta">Ver Sorteo Instagram</a>
+        </div>
+        <button onclick="cerrar()" class="btn btn-outline">Salir</button>
+    </div>
+</div>
+
+<script>
+    let currentId = "desconocido";
+
+    window.onload = function() {
+        const params = new URLSearchParams(window.location.search);
+        const tipo = params.get('socio'); // classic o elite
+        const idUsuario = params.get('id'); // El código único de la tarjeta
+
+        // Guardamos el ID para usarlo en el botón de WhatsApp
+        if(idUsuario) currentId = idUsuario;
+
+        // 1. BUSCAMOS LOS SACOS EN LA "BASE DE DATOS"
+        let cantidadSacos = 0;
+        if (idUsuario && BASE_DE_DATOS[idUsuario] !== undefined) {
+            cantidadSacos = BASE_DE_DATOS[idUsuario];
+        }
+
+        // 2. ACTUALIZAMOS LA BARRA DE PROGRESO
+        actualizarBarra(cantidadSacos);
+
+        // 3. MOSTRAMOS LA PANTALLA CORRECTA
+        document.getElementById('view-public').classList.add('hidden');
+        document.getElementById('view-classic').classList.add('hidden');
+        document.getElementById('view-elite').classList.add('hidden');
+
+        if (tipo === 'classic') {
+            document.getElementById('view-classic').classList.remove('hidden');
+        } else if (tipo === 'elite') {
+            document.getElementById('view-elite').classList.remove('hidden');
+        } else {
+            document.getElementById('view-public').classList.remove('hidden');
+        }
+    };
+
+    function actualizarBarra(n) {
+        // Evitar que pase de 10 para el gráfico
+        let porcentaje = (n / 10) * 100;
+        if (porcentaje > 100) porcentaje = 100;
+
+        // Actualizar Textos Classic
+        document.getElementById('texto-sacos-classic').innerHTML = `Llevas <strong>${n} de 10</strong> sacos.`;
+        document.getElementById('label-barra-classic').innerText = `${n}/10`;
+        document.getElementById('barra-classic').style.width = `${porcentaje}%`;
+        
+        let faltan = 10 - n;
+        if(faltan <= 0) {
+            document.getElementById('mensaje-falta-classic').innerHTML = "🎉 ¡Felicidades! Tienes un regalo disponible.";
+        } else {
+            document.getElementById('mensaje-falta-classic').innerText = `Te faltan ${faltan} para tu premio.`;
+        }
+
+        // Actualizar Textos Elite (si aplica)
+        document.getElementById('texto-sacos-elite').innerHTML = `Llevas <strong>${n} de 10</strong> sacos.`;
+        document.getElementById('label-barra-elite').innerText = `${n}/10`;
+        document.getElementById('barra-elite').style.width = `${porcentaje}%`;
+    }
+
+    function conectarWhatsApp(mensaje) {
+        let url = `https://wa.me/${WHATSAPP_TIENDA}?text=${encodeURIComponent(mensaje)}`;
+        window.open(url, '_blank');
+    }
+    function cerrar() { window.location.href = window.location.pathname; }
+</script>
+
+</body>
+</html>
+
+
+
