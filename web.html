@@ -94,7 +94,29 @@
         // Borra el parámetro de la URL y recarga para volver al inicio
         window.location.href = window.location.pathname;
     }
+
+
+    // Función para generar links de WhatsApp dinámicos
+    function irAWhatsapp(mensaje) {
+        // Crea un link que abre la app de WhatsApp con el texto listo
+        const url = `https://wa.me/${TELEFONO_TIENDA}?text=${encodeURIComponent(mensaje)}`;
+        window.open(url, '_blank');
+    }
+
+    // Redirección a Instagram/Sorteos
+    function irASorteo() {
+        window.open(LINK_SORTEOS, '_blank');
+    }
+
+    // Redirección a Tienda Web
+    function irATienda() {
+        window.open(LINK_TIENDA, '_blank');
+    }
+
+    function cerrarSesion() {
+        window.location.href = window.location.pathname;
 </script>
 
 </body>
+
 </html>
