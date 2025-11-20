@@ -19,32 +19,23 @@
         
         h2 { font-size: 1.3rem; margin-top: 0; color: var(--primary); }
         h3 { font-size: 1.1rem; margin-top: 0; margin-bottom: 10px; }
-        ul { padding-left: 20px; color: #555; margin-bottom: 20px; }
-        li { margin-bottom: 5px; }
+        
+        /* FORMULARIO ESTILOS */
+        .form-group { margin-bottom: 15px; }
+        .form-label { display: block; margin-bottom: 5px; font-weight: bold; color: #555; }
+        .form-input { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; font-size: 16px; box-sizing: border-box; }
+        .form-input:read-only { background-color: #eee; color: #777; }
+        select.form-input { background: white; }
 
         /* BOTONES */
-        .btn { 
-            display: block; 
-            width: 100%; 
-            padding: 15px 0; 
-            border: none; 
-            border-radius: 8px; 
-            font-weight: bold; 
-            text-align: center; 
-            text-decoration: none; 
-            font-size: 16px; 
-            cursor: pointer; 
-            margin-top: 10px; 
-            transition: transform 0.1s; 
-            box-sizing: border-box; 
-            -webkit-appearance: none; /* Fix para iPhone */
-        }
+        .btn { display: block; width: 100%; padding: 15px 0; border: none; border-radius: 8px; font-weight: bold; text-align: center; text-decoration: none; font-size: 16px; cursor: pointer; margin-top: 10px; transition: transform 0.1s; box-sizing: border-box; -webkit-appearance: none; }
         .btn:active { transform: scale(0.98); }
         
-        .btn-classic { background-color: var(--classic); color: white; box-shadow: 0 4px 6px rgba(52, 152, 219, 0.2); }
-        .btn-elite { background-color: var(--elite); color: #333; box-shadow: 0 4px 6px rgba(241, 196, 15, 0.3); }
+        .btn-classic { background-color: var(--classic); color: white; }
+        .btn-elite { background-color: var(--elite); color: #333; }
         .btn-whatsapp { background-color: #25D366; color: white; }
         .btn-insta { background: linear-gradient(45deg, #405de6, #5851db, #833ab4, #c13584, #e1306c, #fd1d1d); color: white; }
+        .btn-submit { background-color: #e67e22; color: white; } 
         .btn-outline { background: transparent; border: 2px solid #ccc; color: #666; }
 
         /* BARRA DE PROGRESO */
@@ -53,66 +44,91 @@
         .progress-text { position: absolute; width: 100%; text-align: center; line-height: 20px; font-size: 0.8rem; font-weight: bold; color: #555; }
 
         .hidden { display: none !important; }
+        .loading { text-align: center; padding: 50px; color: #666; }
     </style>
 </head>
 <body>
 
 <script>
-    // 1. NÚMERO NUEVO DE WHATSAPP
+    // 1. LINK PARA LEER DATOS (CSV PUBLICADO EN LA WEB)
+    const LINK_CSV_GOOGLE = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTJpAvsHXGVClF4DdMpE7ZIV8HDdUMEC5GTny_zbYnjQbNbCgeo5_m_pR4aqEPuoc9kZZH1y8aZynnV/pub?gid=0&single=true&output=csv"; 
+
+    // 2. LINK PARA ESCRIBIR DATOS (URL DEL APP SCRIPT QUE CREASTE)
+    const URL_SCRIPT_GOOGLE = "https://script.google.com/macros/s/AKfycbyc5cNow8vYQtKZONJDJU67jT2n-N-n29uf-YQjGSc6g1tQwXLvJ3XJGlDbj-8enFM/exec";
+
+    // 3. DATOS DE CONTACTO
     const WHATSAPP_TIENDA = "56993525112"; 
-
-    // 2. LINK NUEVO DE INSTAGRAM
     const LINK_INSTAGRAM = "https://www.instagram.com/pets.jackk/";
-
-    // 3. BASE DE DATOS DE CLIENTES (Ejemplo)
-    const BASE_DE_DATOS = {
-        'cliente_01': 2,
-        'cliente_02': 5,
-        'vip_juan': 9
-        // Agrega más aquí...
-    };
 </script>
 
-<div id="view-public" class="hidden">
-    <header>
-        <h1>Pets & Jack</h1>
-        <p>Elige tu membresía o escanea tu tarjeta</p>
+<div id="loading-screen" class="loading">
+    <h2>Cargando...</h2>
+    <p>Conectando con la base de datos</p>
+</div>
+
+<div id="view-register" class="hidden">
+    <header style="background: #e67e22;">
+        <h1>Registro de Socio</h1>
+        <p>Activa tu tarjeta ahora</p>
     </header>
-    
     <div class="container">
-        <div class="card" style="border-top: 5px solid var(--classic);">
-            <h2 style="color: var(--classic);">🔵 Membresía Classic</h2>
-            <ul>
-                <li>5% Descuento Permanente</li>
-                <li>Regalo cada 10 sacos</li>
-                <li>Acceso anticipado 48h</li>
-            </ul>
-            <a href="#" onclick="conectarWhatsApp('Hola, quiero información para COMPRAR o REPONER la Tarjeta CLASSIC.')" class="btn btn-classic">
-                Comprar / Reponer Classic
-            </a>
-        </div>
+        <div class="card">
+            <form id="registroForm" onsubmit="enviarRegistro(event)">
+                <div class="form-group">
+                    <label class="form-label">ID Tarjeta (Automático)</label>
+                    <input type="text" name="id_tarjeta" id="reg-id" class="form-input" readonly>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Nombre Completo</label>
+                    <input type="text" name="nombre" class="form-input" placeholder="Ej: Juan Pérez" required>
+                </div>
 
-        <div class="card" style="border-top: 5px solid var(--elite);">
-            <h2 style="color: #b7950b;">👑 Membresía Élite</h2>
-            <ul>
-                <li>10% Descuento Permanente</li>
-                <li>Sorteos Mensuales</li>
-                <li>3 Reposiciones Gratis</li>
-            </ul>
-            <a href="#" onclick="conectarWhatsApp('Hola, quiero información para COMPRAR o REPONER la Tarjeta ÉLITE.')" class="btn btn-elite">
-                Comprar / Reponer Élite
-            </a>
-        </div>
+                <div class="form-group">
+                    <label class="form-label">Teléfono</label>
+                    <input type="tel" name="telefono" class="form-input" placeholder="Ej: 56912345678" required>
+                </div>
 
-        <div style="text-align: center; margin-top: 30px; color: #999; font-size: 0.9rem;">
-            <p>¿Ya tienes tu tarjeta? <br>Acerca tu celular a ella.</p>
+                <div class="form-group">
+                    <label class="form-label">Email</label>
+                    <input type="email" name="email" class="form-input" placeholder="juan@correo.cl" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Tipo de Socio</label>
+                    <select name="tipo_socio" class="form-input">
+                        <option value="Classic">Classic (Azul)</option>
+                        <option value="Elite">Élite (Dorada)</option>
+                    </select>
+                </div>
+
+                <input type="hidden" name="fecha" value="HOY">
+                <input type="hidden" name="sacos" value="0">
+
+                <button type="submit" id="btn-submit" class="btn btn-submit">✅ Guardar y Activar</button>
+                <p id="status-msg" style="text-align:center; color:#666; margin-top:10px;"></p>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div id="view-public" class="hidden">
+    <header><h1>Pets & Jack</h1><p>Bienvenido al Club</p></header>
+    <div class="container">
+        <div class="card">
+            <h2>¿Ya eres socio?</h2>
+            <p>Acerca tu celular a tu tarjeta NFC para ver tus puntos.</p>
+        </div>
+        <div class="card">
+            <h3>Compra tu Membresía</h3>
+            <a href="#" onclick="conectarWhatsApp('Hola, quiero comprar una membresía.')" class="btn btn-whatsapp">Comprar por WhatsApp</a>
         </div>
     </div>
 </div>
 
 <div id="view-classic" class="hidden">
     <header style="background: var(--classic);">
-        <h1>Socio Classic 🐶</h1>
+        <h1 id="saludo-classic">Hola, Socio</h1>
         <p>ID: <span id="display-id-classic">...</span></p>
     </header>
     <div class="container">
@@ -124,28 +140,24 @@
                 <div class="progress-fill" id="barra-classic" style="background: var(--classic);"></div>
             </div>
             <p id="mensaje-falta-classic" style="font-size:0.8rem; color:#999; text-align: center;">...</p>
-
             <a href="#" onclick="registrarSaco('Classic')" class="btn btn-classic">🛒 Registrar Nuevo Saco</a>
         </div>
-        
         <div class="card">
             <span style="background: var(--classic); color: white; padding: 4px 10px; border-radius: 15px; font-size: 0.8rem;">ACTIVO</span>
             <h3>5% Descuento en Tienda</h3>
-            <p>Muestra esta pantalla en caja para validar tu descuento.</p>
         </div>
-
         <button onclick="cerrarSesion()" class="btn btn-outline">Cerrar Sesión</button>
     </div>
 </div>
 
 <div id="view-elite" class="hidden">
     <header style="background: var(--elite); color: #333;">
-        <h1>Socio Élite 👑</h1>
+        <h1 id="saludo-elite">Hola, Socio 👑</h1>
         <p>ID: <span id="display-id-elite">...</span></p>
     </header>
     <div class="container">
         <div class="card" style="background: linear-gradient(to right, #fff, #fffdf5);">
-            <h3>🎁 Progreso de Sacos</h3>
+            <h3>🎁 Progreso VIP</h3>
             <p id="texto-sacos-elite">Cargando...</p>
             <div class="progress-container">
                 <span class="progress-text" id="label-barra-elite">0/10</span>
@@ -153,98 +165,156 @@
             </div>
              <a href="#" onclick="registrarSaco('Elite')" class="btn btn-elite">🛒 Registrar Nuevo Saco</a>
         </div>
-
         <div class="card">
             <span style="background: var(--elite); color: #333; padding: 4px 10px; border-radius: 15px; font-size: 0.8rem;">VIP ACTIVO</span>
-            <h3>10% Descuento Permanente</h3>
-            <p>Válido en todos los productos y servicios.</p>
+            <h3>10% Descuento + Sorteos</h3>
         </div>
-
         <div class="card">
             <h3>🎉 Sorteos Mensuales</h3>
-            <p>Participas automáticamente.</p>
             <a href="#" onclick="window.open(LINK_INSTAGRAM, '_blank')" class="btn btn-insta">📸 Ver Premios en Instagram</a>
         </div>
-        
         <div class="card">
             <h3>💳 Reposición Gratuita</h3>
-            <p>Tienes 3 reposiciones al año sin costo.</p>
             <a href="#" onclick="conectarWhatsApp('Hola, soy Socio Elite y necesito reponer mi tarjeta gratis.')" class="btn btn-outline">Solicitar Reposición</a>
         </div>
-
         <button onclick="cerrarSesion()" class="btn btn-outline">Cerrar Sesión</button>
     </div>
 </div>
 
 <script>
     let currentId = "Invitado";
+    let currentName = "";
+    let currentSacos = 0;
 
     window.onload = function() {
         const params = new URLSearchParams(window.location.search);
-        const tipo = params.get('socio');
-        const idUsuario = params.get('id');
-
-        if(idUsuario) {
-            currentId = idUsuario;
-            document.getElementById('display-id-classic').innerText = currentId;
-            document.getElementById('display-id-elite').innerText = currentId;
+        const idURL = params.get('id');
+        
+        if (!idURL) {
+            mostrarVista('public');
+            return;
         }
+        
+        currentId = idURL;
+        // Verificar si existe en la base de datos
+        verificarUsuario(idURL);
+    };
 
-        // Cargar datos
-        let cantidad = 0;
-        if (idUsuario && BASE_DE_DATOS[idUsuario] !== undefined) {
-            cantidad = BASE_DE_DATOS[idUsuario];
+    // --- VERIFICACIÓN (LEER EXCEL) ---
+    function verificarUsuario(idBuscado) {
+        fetch(LINK_CSV_GOOGLE)
+            .then(response => response.text())
+            .then(textoCSV => {
+                const usuario = buscarEnCSV(textoCSV, idBuscado);
+                
+                if (usuario) {
+                    // EXISTE: Cargar perfil
+                    currentName = usuario.nombre;
+                    currentSacos = parseInt(usuario.sacos) || 0;
+                    actualizarInterfaz(usuario.tipoSocio.toLowerCase().trim());
+                } else {
+                    // NO EXISTE: Mostrar Formulario de Registro
+                    mostrarVista('register');
+                    document.getElementById('reg-id').value = idBuscado; // Auto-llenar ID
+                }
+            })
+            .catch(err => { alert("Error conectando."); mostrarVista('public'); });
+    }
+
+    // --- REGISTRO (ESCRIBIR EN EXCEL) ---
+    function enviarRegistro(e) {
+        e.preventDefault();
+        const btn = document.getElementById('btn-submit');
+        const status = document.getElementById('status-msg');
+        const form = document.forms['registroForm'];
+
+        btn.disabled = true;
+        btn.innerText = "Guardando...";
+        status.innerText = "Enviando datos al servidor...";
+
+        fetch(URL_SCRIPT_GOOGLE, { method: 'POST', body: new FormData(form)})
+        .then(response => {
+            status.innerText = "✅ ¡Registro Exitoso! Entrando...";
+            // Recargar la página para entrar automáticamente
+            setTimeout(() => { location.reload(); }, 1500);
+        })
+        .catch(error => {
+            status.innerText = "❌ Error al guardar. Intenta de nuevo.";
+            btn.disabled = false;
+            btn.innerText = "Guardar y Activar";
+        });
+    }
+
+    // --- UTILIDADES ---
+    function buscarEnCSV(csv, idBuscado) {
+        const filas = csv.split('\n');
+        for (let i = 1; i < filas.length; i++) {
+            const cols = filas[i].split(','); 
+            // Ajusta índices según el orden exacto de columnas en tu Excel
+            // A=0 (fecha), B=1 (id), C=2 (nombre), D=3 (tel), E=4 (email), F=5 (sacos), G=6 (tipo)
+            if (cols.length < 2) continue;
+            
+            // Limpiamos comillas por si acaso
+            const idExcel = cols[1].replace(/"/g, '').trim();
+            
+            if (idExcel === idBuscado) {
+                return {
+                    nombre: cols[2].replace(/"/g, ''),
+                    telefono: cols[3],
+                    sacos: cols[5],
+                    tipoSocio: cols[6]
+                };
+            }
         }
-        actualizarGraficos(cantidad);
+        return null;
+    }
 
-        // Mostrar vista correcta
+    function actualizarInterfaz(tipo) {
+        document.getElementById('display-id-classic').innerText = currentId;
+        document.getElementById('display-id-elite').innerText = currentId;
+        document.getElementById('saludo-classic').innerText = "Hola, " + currentName.split(" ")[0];
+        document.getElementById('saludo-elite').innerText = "Hola, " + currentName.split(" ")[0];
+        
+        actualizarBarra(currentSacos, tipo);
+
+        if (tipo.includes('classic')) mostrarVista('classic');
+        else if (tipo.includes('elite')) mostrarVista('elite');
+        else mostrarVista('classic');
+    }
+
+    function mostrarVista(nombre) {
+        document.getElementById('loading-screen').classList.add('hidden');
         document.getElementById('view-public').classList.add('hidden');
+        document.getElementById('view-register').classList.add('hidden'); // Nuevo
         document.getElementById('view-classic').classList.add('hidden');
         document.getElementById('view-elite').classList.add('hidden');
 
-        if (tipo === 'classic') {
-            document.getElementById('view-classic').classList.remove('hidden');
-        } else if (tipo === 'elite') {
-            document.getElementById('view-elite').classList.remove('hidden');
-        } else {
-            document.getElementById('view-public').classList.remove('hidden');
-        }
-    };
+        if (nombre === 'public') document.getElementById('view-public').classList.remove('hidden');
+        if (nombre === 'register') document.getElementById('view-register').classList.remove('hidden');
+        if (nombre === 'classic') document.getElementById('view-classic').classList.remove('hidden');
+        if (nombre === 'elite') document.getElementById('view-elite').classList.remove('hidden');
+    }
 
-    function actualizarGraficos(n) {
+    function actualizarBarra(n, tipo) {
         let porcentaje = (n / 10) * 100;
         if (porcentaje > 100) porcentaje = 100;
         let faltan = 10 - n;
-        let mensaje = faltan <= 0 ? "¡Premio disponible!" : `Faltan ${faltan} sacos para tu premio.`;
+        let sufijo = tipo.includes('elite') ? 'elite' : 'classic';
 
-        // Classic Updates
-        document.getElementById('texto-sacos-classic').innerHTML = `Llevas <strong>${n} de 10</strong> sacos.`;
-        document.getElementById('label-barra-classic').innerText = `${n}/10`;
-        document.getElementById('barra-classic').style.width = `${porcentaje}%`;
-        document.getElementById('mensaje-falta-classic').innerText = mensaje;
-
-        // Elite Updates
-        document.getElementById('texto-sacos-elite').innerHTML = `Llevas <strong>${n} de 10</strong> sacos.`;
-        document.getElementById('label-barra-elite').innerText = `${n}/10`;
-        document.getElementById('barra-elite').style.width = `${porcentaje}%`;
+        document.getElementById(`texto-sacos-${sufijo}`).innerHTML = `Llevas <strong>${n} de 10</strong> sacos.`;
+        document.getElementById(`barra-${sufijo}`).style.width = `${porcentaje}%`;
+        if(sufijo === 'classic') document.getElementById('mensaje-falta-classic').innerText = faltan <= 0 ? "¡Premio!" : `Faltan ${faltan}.`;
     }
 
-    // Función para conectar a WhatsApp
-    function conectarWhatsApp(mensaje) {
-        let numero = WHATSAPP_TIENDA.replace(/\D/g,''); // Limpia el número de símbolos
-        let url = `https://wa.me/${numero}?text=${encodeURIComponent(mensaje)}`;
-        window.open(url, '_blank');
-    }
-
-    // Función específica para el botón de Sacos
     function registrarSaco(tipoSocio) {
-        let msg = `Hola, soy Socio ${tipoSocio} (ID: ${currentId}). Quiero registrar la compra de un saco y sumar puntos.`;
+        let msg = `Hola, soy ${currentName} (ID: ${currentId}, Socio ${tipoSocio}). Quiero registrar un saco.`;
         conectarWhatsApp(msg);
     }
-
-    function cerrarSesion() {
-        window.location.href = window.location.pathname;
+    function conectarWhatsApp(mensaje) {
+        let url = `https://wa.me/${WHATSAPP_TIENDA.replace(/\D/g,'')}?text=${encodeURIComponent(mensaje)}`;
+        window.open(url, '_blank');
     }
+    function cerrarSesion() { window.location.href = window.location.pathname; }
 </script>
 
 </body>
