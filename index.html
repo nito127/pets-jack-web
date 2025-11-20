@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Club Pets & Jack</title>
     <style>
-        /* --- ESTILOS VISUALES --- */
+        /* --- ESTILOS VISUALES (Diseño Limpio) --- */
         :root { --primary: #2c3e50; --classic: #3498db; --elite: #f1c40f; --bg: #f4f6f7; --text: #333; }
         body { font-family: 'Helvetica', 'Arial', sans-serif; margin: 0; padding: 0; background-color: var(--bg); color: var(--text); }
         
@@ -15,20 +15,35 @@
 
         .container { max-width: 600px; margin: 0 auto; padding: 20px; }
         
-        .card { background: white; padding: 20px; margin-bottom: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); position: relative; overflow: hidden; }
+        /* TARJETAS (LAS CASILLAS) */
+        .card { background: white; padding: 20px; margin-bottom: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); position: relative; }
         
         h2 { font-size: 1.3rem; margin-top: 0; color: var(--primary); }
         h3 { font-size: 1.1rem; margin-top: 0; margin-bottom: 10px; }
-        p { color: #666; line-height: 1.5; margin-bottom: 15px; }
         ul { padding-left: 20px; color: #555; margin-bottom: 20px; }
         li { margin-bottom: 5px; }
 
-        /* BOTONES */
-        .btn { display: block; width: 100%; padding: 14px 0; border: none; border-radius: 8px; font-weight: bold; text-align: center; text-decoration: none; font-size: 16px; cursor: pointer; margin-top: 10px; transition: transform 0.1s; box-sizing: border-box; }
+        /* BOTONES DE ACCIÓN (GRANDES Y CLICABLES) */
+        .btn { 
+            display: block; 
+            width: 100%; 
+            padding: 15px 0; 
+            border: none; 
+            border-radius: 8px; 
+            font-weight: bold; 
+            text-align: center; 
+            text-decoration: none; 
+            font-size: 16px; 
+            cursor: pointer; 
+            margin-top: 10px; 
+            transition: transform 0.1s, opacity 0.2s; 
+            box-sizing: border-box; 
+        }
         .btn:active { transform: scale(0.98); }
+        .btn:hover { opacity: 0.9; }
         
-        .btn-classic { background-color: var(--classic); color: white; }
-        .btn-elite { background-color: var(--elite); color: #333; }
+        .btn-classic { background-color: var(--classic); color: white; box-shadow: 0 4px 6px rgba(52, 152, 219, 0.2); }
+        .btn-elite { background-color: var(--elite); color: #333; box-shadow: 0 4px 6px rgba(241, 196, 15, 0.3); }
         .btn-whatsapp { background-color: #25D366; color: white; }
         .btn-insta { background: linear-gradient(45deg, #405de6, #5851db, #833ab4, #c13584, #e1306c, #fd1d1d); color: white; }
         .btn-outline { background: transparent; border: 2px solid #ccc; color: #666; }
@@ -38,63 +53,61 @@
         .progress-fill { height: 100%; border-radius: 10px; transition: width 1s ease-in-out; width: 0%; display: flex; align-items: center; justify-content: flex-end; }
         .progress-text { position: absolute; width: 100%; text-align: center; line-height: 20px; font-size: 0.8rem; font-weight: bold; color: #555; }
 
-        /* ETIQUETAS */
-        .badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: bold; text-transform: uppercase; margin-bottom: 10px; }
-        .badge-classic { background: var(--classic); color: white; }
-        .badge-elite { background: var(--elite); color: #333; }
-
         .hidden { display: none !important; }
     </style>
 </head>
 <body>
 
 <script>
-    // CONFIGURACIÓN
-    const WHATSAPP_TIENDA = ""56993525112""; // ⚠️ CAMBIA ESTO POR TU NÚMERO REAL
-    const LINK_SORTEOS = "https://www.instagram.com/pets.jackk/";
+    // 1. TU NÚMERO DE WHATSAPP (Sin el +)
+    const WHATSAPP_TIENDA = "56912345678"; 
 
-    // CLIENTES Y SUS SACOS
+    // 2. TU INSTAGRAM (Para los sorteos)
+    const LINK_INSTAGRAM = "https://instagram.com/petsandjack";
+
+    // 3. TUS CLIENTES (BASE DE DATOS MANUAL)
+    // Aquí editas los números cuando alguien compra
     const BASE_DE_DATOS = {
-        'cliente_01': 3,
-        'cliente_02': 8,
-        'vip_juan': 5
-        // Agrega más: 'ID': CANTIDAD
+        'cliente_01': 2,
+        'cliente_02': 5,
+        'vip_juan': 9
+        // Agrega más abajo: 'ID': CANTIDAD,
     };
 </script>
 
 <div id="view-public" class="hidden">
     <header>
         <h1>Pets & Jack</h1>
-        <p>Elige tu Membresía o Escanea tu Tarjeta</p>
+        <p>Elige tu membresía o escanea tu tarjeta</p>
     </header>
     
     <div class="container">
         <div class="card" style="border-top: 5px solid var(--classic);">
-            <h2>🔵 Membresía Classic</h2>
+            <h2 style="color: var(--classic);">🔵 Membresía Classic</h2>
             <ul>
                 <li>5% Descuento Permanente</li>
                 <li>Regalo cada 10 sacos</li>
-                <li>Acceso a promos 48h antes</li>
+                <li>Acceso anticipado 48h</li>
             </ul>
-            <a href="#" onclick="conectarWhatsApp('Hola, quiero COMPRAR o REPONER mi tarjeta CLASSIC.')" class="btn btn-classic">
+            <a href="#" onclick="conectarWhatsApp('Hola, quiero información para COMPRAR o REPONER la Tarjeta CLASSIC.')" class="btn btn-classic">
                 Comprar / Reponer Classic
             </a>
         </div>
 
         <div class="card" style="border-top: 5px solid var(--elite);">
-            <h2>👑 Membresía Élite</h2>
+            <h2 style="color: #b7950b;">👑 Membresía Élite</h2>
             <ul>
                 <li>10% Descuento Permanente</li>
-                <li>Sorteos mensuales exclusivos</li>
-                <li>3 Reposiciones Gratis al año</li>
+                <li>Sorteos Mensuales</li>
+                <li>3 Reposiciones Gratis</li>
             </ul>
-            <a href="#" onclick="conectarWhatsApp('Hola, quiero COMPRAR o REPONER mi tarjeta ELITE.')" class="btn btn-elite">
+            <a href="#" onclick="conectarWhatsApp('Hola, quiero información para COMPRAR o REPONER la Tarjeta ÉLITE.')" class="btn btn-elite">
                 Comprar / Reponer Élite
             </a>
         </div>
 
-        <div style="text-align: center; margin-top: 20px; font-size: 0.9rem; color: #999;">
-            <p>¿Ya tienes tarjeta? <br> Solo acerca tu celular a ella para ver tus datos.</p>
+        <div style="text-align: center; margin-top: 30px; color: #999; font-size: 0.9rem;">
+            <p>¿Ya tienes tu tarjeta? <br>Acerca tu celular a ella ahora.</p>
         </div>
     </div>
 </div>
@@ -107,21 +120,20 @@
     <div class="container">
         <div class="card">
             <h3>🎁 Tu Progreso de Sacos</h3>
-            <p id="texto-sacos-classic">Cargando datos...</p>
-            
+            <p id="texto-sacos-classic">Cargando...</p>
             <div class="progress-container">
                 <span class="progress-text" id="label-barra-classic">0/10</span>
                 <div class="progress-fill" id="barra-classic" style="background: var(--classic);"></div>
             </div>
-            <p style="font-size:0.8rem; color:#999; text-align: center;" id="mensaje-falta-classic">...</p>
+            <p id="mensaje-falta-classic" style="font-size:0.8rem; color:#999; text-align: center;">...</p>
 
             <a href="#" onclick="registrarSaco('Classic')" class="btn btn-classic">🛒 Registrar Nuevo Saco</a>
         </div>
         
         <div class="card">
-            <span class="badge badge-classic">Beneficio Activo</span>
+            <span style="background: var(--classic); color: white; padding: 4px 10px; border-radius: 15px; font-size: 0.8rem;">ACTIVO</span>
             <h3>5% Descuento en Tienda</h3>
-            <p>Muestra esta pantalla en caja.</p>
+            <p>Muestra esta pantalla en caja para validar tu descuento.</p>
         </div>
 
         <button onclick="cerrarSesion()" class="btn btn-outline">Cerrar Sesión</button>
@@ -135,8 +147,8 @@
     </header>
     <div class="container">
         <div class="card" style="background: linear-gradient(to right, #fff, #fffdf5);">
-            <h3>🎁 Progreso VIP</h3>
-            <p id="texto-sacos-elite">Cargando datos...</p>
+            <h3>🎁 Progreso de Sacos</h3>
+            <p id="texto-sacos-elite">Cargando...</p>
             <div class="progress-container">
                 <span class="progress-text" id="label-barra-elite">0/10</span>
                 <div class="progress-fill" id="barra-elite" style="background: var(--elite);"></div>
@@ -145,43 +157,50 @@
         </div>
 
         <div class="card">
-            <span class="badge badge-elite">VIP</span>
+            <span style="background: var(--elite); color: #333; padding: 4px 10px; border-radius: 15px; font-size: 0.8rem;">VIP ACTIVO</span>
             <h3>10% Descuento Permanente</h3>
-            <p>Aplicable en todos los productos y servicios.</p>
+            <p>Válido en todos los productos y servicios.</p>
         </div>
 
         <div class="card">
             <h3>🎉 Sorteos Mensuales</h3>
-            <p>Participas automáticamente por 1 año de comida.</p>
-            <a href="#" onclick="window.open(LINK_SORTEOS)" class="btn btn-insta">Ver Premios en Instagram</a>
+            <p>Participas automáticamente.</p>
+            <a href="#" onclick="window.open(LINK_INSTAGRAM, '_blank')" class="btn btn-insta">📸 Ver Premios en Instagram</a>
         </div>
         
+        <div class="card">
+            <h3>💳 Reposición Gratuita</h3>
+            <p>Tienes 3 reposiciones al año sin costo.</p>
+            <a href="#" onclick="conectarWhatsApp('Hola, soy Socio Elite y necesito reponer mi tarjeta gratis.')" class="btn btn-outline">Solicitar Reposición</a>
+        </div>
+
         <button onclick="cerrarSesion()" class="btn btn-outline">Cerrar Sesión</button>
     </div>
 </div>
 
 <script>
-    let currentId = "invitado";
+    let currentId = "Invitado";
 
     window.onload = function() {
         const params = new URLSearchParams(window.location.search);
         const tipo = params.get('socio');
         const idUsuario = params.get('id');
 
+        // Si hay un ID en la tarjeta, lo guardamos
         if(idUsuario) {
             currentId = idUsuario;
             document.getElementById('display-id-classic').innerText = currentId;
             document.getElementById('display-id-elite').innerText = currentId;
         }
 
-        // Cargar cantidad de sacos
+        // Buscamos cuántos sacos tiene este cliente en la LISTA MANUAL
         let cantidad = 0;
         if (idUsuario && BASE_DE_DATOS[idUsuario] !== undefined) {
             cantidad = BASE_DE_DATOS[idUsuario];
         }
         actualizarGraficos(cantidad);
 
-        // Enrutador de vistas
+        // Decidimos qué pantalla mostrar
         document.getElementById('view-public').classList.add('hidden');
         document.getElementById('view-classic').classList.add('hidden');
         document.getElementById('view-elite').classList.add('hidden');
@@ -191,45 +210,48 @@
         } else if (tipo === 'elite') {
             document.getElementById('view-elite').classList.remove('hidden');
         } else {
+            // Si no hay tarjeta, mostramos el MENÚ PÚBLICO
             document.getElementById('view-public').classList.remove('hidden');
         }
     };
 
+    // Función visual para las barras de progreso
     function actualizarGraficos(n) {
         let porcentaje = (n / 10) * 100;
         if (porcentaje > 100) porcentaje = 100;
         let faltan = 10 - n;
         let mensaje = faltan <= 0 ? "¡Premio disponible!" : `Faltan ${faltan} sacos para tu premio.`;
 
-        // Actualizar Classic
+        // Classic
         document.getElementById('texto-sacos-classic').innerHTML = `Llevas <strong>${n} de 10</strong> sacos.`;
         document.getElementById('label-barra-classic').innerText = `${n}/10`;
         document.getElementById('barra-classic').style.width = `${porcentaje}%`;
         document.getElementById('mensaje-falta-classic').innerText = mensaje;
 
-        // Actualizar Elite
+        // Elite
         document.getElementById('texto-sacos-elite').innerHTML = `Llevas <strong>${n} de 10</strong> sacos.`;
         document.getElementById('label-barra-elite').innerText = `${n}/10`;
         document.getElementById('barra-elite').style.width = `${porcentaje}%`;
     }
 
+    // Función Maestra de WhatsApp
     function conectarWhatsApp(mensaje) {
-        let url = `https://wa.me/${WHATSAPP_TIENDA}?text=${encodeURIComponent(mensaje)}`;
+        let numero = WHATSAPP_TIENDA.replace(/\D/g,''); // Limpia el número
+        let url = `https://wa.me/${numero}?text=${encodeURIComponent(mensaje)}`;
         window.open(url, '_blank');
     }
 
+    // Función Específica para Registrar Saco (Incluye el ID)
     function registrarSaco(tipoSocio) {
-        let msg = `Hola, soy Socio ${tipoSocio} (ID: ${currentId}). Quiero registrar la compra de un saco para mis puntos.`;
+        let msg = `Hola, soy Socio ${tipoSocio} (ID: ${currentId}). Quiero registrar la compra de un saco y sumar puntos.`;
         conectarWhatsApp(msg);
     }
 
     function cerrarSesion() {
+        // Limpia la URL para volver al inicio público
         window.location.href = window.location.pathname;
     }
 </script>
 
 </body>
 </html>
-
-
-
