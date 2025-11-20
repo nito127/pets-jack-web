@@ -5,30 +5,50 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Club Pets & Jack</title>
     <style>
-        /* --- ESTILOS VISUALES (INTACTOS) --- */
+        /* --- ESTILOS VISUALES --- */
         :root { --primary: #2c3e50; --classic: #3498db; --elite: #f1c40f; --bg: #f4f6f7; --text: #333; }
         body { font-family: 'Helvetica', 'Arial', sans-serif; margin: 0; padding: 0; background-color: var(--bg); color: var(--text); }
+        
         header { background: var(--primary); color: white; padding: 1.5rem 1rem; text-align: center; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
         header h1 { margin: 0; font-size: 1.5rem; }
         header p { margin: 5px 0 0; opacity: 0.9; font-size: 0.9rem; }
+
         .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        
         .card { background: white; padding: 20px; margin-bottom: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); position: relative; }
+        
         h2 { font-size: 1.3rem; margin-top: 0; color: var(--primary); }
         h3 { font-size: 1.1rem; margin-top: 0; margin-bottom: 10px; }
         ul { padding-left: 20px; color: #555; margin-bottom: 20px; }
         li { margin-bottom: 5px; }
+
+        /* INPUTS FORMULARIO */
+        .input-group { margin-bottom: 15px; text-align: left; }
+        .input-group label { display: block; margin-bottom: 5px; font-weight: bold; font-size: 0.9rem; }
+        .input-field { width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 1rem; box-sizing: border-box; }
+        .input-field:focus { border-color: var(--primary); outline: none; }
+
         /* BOTONES */
-        .btn { display: block; width: 100%; padding: 15px 0; border: none; border-radius: 8px; font-weight: bold; text-align: center; text-decoration: none; font-size: 16px; cursor: pointer; margin-top: 10px; transition: transform 0.1s; box-sizing: border-box; -webkit-appearance: none; }
+        .btn { 
+            display: block; width: 100%; padding: 15px 0; border: none; border-radius: 8px; 
+            font-weight: bold; text-align: center; text-decoration: none; font-size: 16px; 
+            cursor: pointer; margin-top: 10px; transition: transform 0.1s; box-sizing: border-box; 
+            -webkit-appearance: none; 
+        }
         .btn:active { transform: scale(0.98); }
+        
         .btn-classic { background-color: var(--classic); color: white; box-shadow: 0 4px 6px rgba(52, 152, 219, 0.2); }
         .btn-elite { background-color: var(--elite); color: #333; box-shadow: 0 4px 6px rgba(241, 196, 15, 0.3); }
         .btn-whatsapp { background-color: #25D366; color: white; }
         .btn-insta { background: linear-gradient(45deg, #405de6, #5851db, #833ab4, #c13584, #e1306c, #fd1d1d); color: white; }
         .btn-outline { background: transparent; border: 2px solid #ccc; color: #666; }
+        .btn-cancel { background-color: #e74c3c; color: white; margin-top: 10px; }
+
         /* BARRA DE PROGRESO */
         .progress-container { background: #eee; height: 20px; border-radius: 10px; overflow: hidden; margin: 10px 0; position: relative; }
         .progress-fill { height: 100%; border-radius: 10px; transition: width 1s ease-in-out; width: 0%; display: flex; align-items: center; justify-content: flex-end; }
         .progress-text { position: absolute; width: 100%; text-align: center; line-height: 20px; font-size: 0.8rem; font-weight: bold; color: #555; }
+
         .hidden { display: none !important; }
     </style>
 </head>
@@ -48,9 +68,9 @@
                 <li>Regalo cada 10 sacos</li>
                 <li>Acceso anticipado 48h</li>
             </ul>
-            <a href="#" onclick="conectarWhatsApp('Hola, quiero información para COMPRAR o REPONER la Tarjeta CLASSIC.')" class="btn btn-classic">
-                Comprar / Reponer Classic
-            </a>
+            <button onclick="abrirFormularioRegistro('classic')" class="btn btn-classic">
+                Registrarme en Classic
+            </button>
         </div>
 
         <div class="card" style="border-top: 5px solid var(--elite);">
@@ -60,13 +80,43 @@
                 <li>Sorteos Mensuales</li>
                 <li>3 Reposiciones Gratis</li>
             </ul>
-            <a href="#" onclick="conectarWhatsApp('Hola, quiero información para COMPRAR o REPONER la Tarjeta ÉLITE.')" class="btn btn-elite">
-                Comprar / Reponer Élite
-            </a>
+            <button onclick="abrirFormularioRegistro('elite')" class="btn btn-elite">
+                Registrarme en Élite
+            </button>
         </div>
 
         <div style="text-align: center; margin-top: 30px; color: #999; font-size: 0.9rem;">
             <p>¿Ya tienes tu tarjeta? <br>Acerca tu celular a ella ahora.</p>
+        </div>
+    </div>
+</div>
+
+<div id="view-registro" class="hidden">
+    <header>
+        <h1>Crear Cuenta</h1>
+        <p>Ingresa tus datos para generar tu ID</p>
+    </header>
+    <div class="container">
+        <div class="card">
+            <h2 id="titulo-registro">Registro Nuevo Socio</h2>
+            <p style="margin-bottom:20px; color:#666;">Estás a un paso de obtener tus beneficios.</p>
+            
+            <div class="input-group">
+                <label>Nombre Completo:</label>
+                <input type="text" id="reg-nombre" class="input-field" placeholder="Ej: Juan Pérez">
+            </div>
+
+            <div class="input-group">
+                <label>Teléfono:</label>
+                <input type="tel" id="reg-telefono" class="input-field" placeholder="Ej: 56912345678">
+            </div>
+
+            <button onclick="guardarRegistro()" class="btn" id="btn-confirmar-reg" style="background: var(--primary); color:white;">
+                Confirmar y Crear ID
+            </button>
+            <button onclick="cancelarRegistro()" class="btn btn-outline">
+                Cancelar
+            </button>
         </div>
     </div>
 </div>
@@ -78,6 +128,7 @@
     </header>
     <div class="container">
         <div class="card">
+            <h3 id="saludo-classic">Hola!</h3>
             <h3>🎁 Tu Progreso de Sacos</h3>
             <p id="texto-sacos-classic">Cargando...</p>
             <div class="progress-container">
@@ -106,6 +157,7 @@
     </header>
     <div class="container">
         <div class="card" style="background: linear-gradient(to right, #fff, #fffdf5);">
+            <h3 id="saludo-elite">Hola!</h3>
             <h3>🎁 Progreso de Sacos</h3>
             <p id="texto-sacos-elite">Cargando...</p>
             <div class="progress-container">
@@ -138,108 +190,170 @@
 </div>
 
 <script type="module">
-    // --- CONFIGURACIÓN BASE DE DATOS (FIREBASE) ---
+    // --- CONFIGURACIÓN FIREBASE ---
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getFirestore, doc, getDoc, addDoc, collection } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-    // ¡¡¡REEMPLAZA ESTO CON TU CONFIGURACIÓN DE FIREBASE!!!
+    // ⚠️ CONFIGURACIÓN REAL (AGREGADA) ⚠️
     const firebaseConfig = {
         apiKey: "AIzaSyCj49Ndnx5dzoSnOd60hGddI3t4ElFl_Vk",
         authDomain: "petsjack.firebaseapp.com",
         projectId: "petsjack",
         storageBucket: "petsjack.firebasestorage.app",
         messagingSenderId: "647166319900",
-        appId: "1:647166319900:web:2a4e40d6ea8c9551a46ed9"
+        appId: "1:647166319900:web:2a4e40d6ea8c9551a46ed9",
+        measurementId: "G-M7S527YE2B"
     };
 
-    // Inicializar DB
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
     // VARIABLES GLOBALES
     window.WHATSAPP_TIENDA = "56993525112"; 
     window.LINK_INSTAGRAM = "https://www.instagram.com/pets.jackk/";
-    let currentId = "Invitado";
+    let currentId = null;
+    let registroTipoSeleccionado = 'classic';
 
-    // --- LÓGICA PRINCIPAL ---
+    // --- INICIO DE LA APP ---
     window.onload = async function() {
         const params = new URLSearchParams(window.location.search);
-        const tipoURL = params.get('socio');
         const idUsuario = params.get('id');
 
-        // Ocultar todo inicialmente
-        document.getElementById('view-public').classList.add('hidden');
-        document.getElementById('view-classic').classList.add('hidden');
-        document.getElementById('view-elite').classList.add('hidden');
+        // Ocultar todo
+        ocultarTodo();
 
         if(idUsuario) {
+            // Si hay ID en la URL, cargamos al usuario
             currentId = idUsuario;
-            document.getElementById('display-id-classic').innerText = "Cargando...";
-            document.getElementById('display-id-elite').innerText = "Cargando...";
-
-            try {
-                // 1. BUSCAR EN LA BASE DE DATOS
-                const docRef = doc(db, "clientes", idUsuario);
-                const docSnap = await getDoc(docRef);
-
-                if (docSnap.exists()) {
-                    const data = docSnap.data();
-                    console.log("Datos del cliente:", data);
-                    
-                    // Mostrar ID real (o corto si es muy largo)
-                    let idVisible = idUsuario.substring(0, 8).toUpperCase();
-                    document.getElementById('display-id-classic').innerText = idVisible;
-                    document.getElementById('display-id-elite').innerText = idVisible;
-
-                    // Actualizar gráficos con datos reales de la DB
-                    actualizarGraficos(data.sacos);
-
-                    // Mostrar vista según lo que diga la base de datos (o la URL)
-                    // Priorizamos el tipo que está guardado en la base de datos
-                    const tipoReal = data.tipo || tipoURL; 
-                    
-                    if (tipoReal === 'classic') {
-                        document.getElementById('view-classic').classList.remove('hidden');
-                    } else if (tipoReal === 'elite') {
-                        document.getElementById('view-elite').classList.remove('hidden');
-                    }
-                } else {
-                    alert("Cliente no encontrado en la base de datos.");
-                    document.getElementById('view-public').classList.remove('hidden');
-                }
-            } catch (error) {
-                console.error("Error conectando a DB:", error);
-                alert("Error de conexión.");
-            }
+            cargarUsuario(idUsuario);
         } else {
-            // Si no hay ID, mostrar público
+            // Si no hay ID, mostramos la vista pública para elegir/registrar
             document.getElementById('view-public').classList.remove('hidden');
         }
     };
 
-    function actualizarGraficos(n) {
-        // Asegurar que es un número
-        n = parseInt(n) || 0;
+    function ocultarTodo() {
+        document.getElementById('view-public').classList.add('hidden');
+        document.getElementById('view-registro').classList.add('hidden');
+        document.getElementById('view-classic').classList.add('hidden');
+        document.getElementById('view-elite').classList.add('hidden');
+    }
+
+    async function cargarUsuario(id) {
+        // Mostrar mensaje de carga
+        document.getElementById('display-id-classic').innerText = "Cargando...";
+        document.getElementById('display-id-elite').innerText = "Cargando...";
+
+        try {
+            const docRef = doc(db, "clientes", id);
+            const docSnap = await getDoc(docRef);
+
+            if (docSnap.exists()) {
+                const data = docSnap.data();
+                const tipo = data.tipo || 'classic';
+                
+                // Mostrar ID visible (recortado)
+                let idVisible = id.substring(0, 8).toUpperCase();
+                document.getElementById('display-id-classic').innerText = idVisible;
+                document.getElementById('display-id-elite').innerText = idVisible;
+
+                // Saludo personalizado
+                if(data.nombre) {
+                    document.getElementById('saludo-classic').innerText = `Hola, ${data.nombre}`;
+                    document.getElementById('saludo-elite').innerText = `Hola, ${data.nombre}`;
+                }
+
+                actualizarGraficos(data.sacos || 0);
+
+                // Mostrar la vista correspondiente
+                if (tipo === 'elite') {
+                    document.getElementById('view-elite').classList.remove('hidden');
+                } else {
+                    document.getElementById('view-classic').classList.remove('hidden');
+                }
+
+            } else {
+                alert("ID no encontrado. Regístrate nuevamente.");
+                document.getElementById('view-public').classList.remove('hidden');
+            }
+        } catch (error) {
+            console.error("Error:", error);
+            alert("Error de conexión. Verifica tu internet.");
+        }
+    }
+
+    // --- FUNCIONES DE REGISTRO ---
+
+    window.abrirFormularioRegistro = function(tipo) {
+        registroTipoSeleccionado = tipo; 
         
+        const titulo = document.getElementById('titulo-registro');
+        titulo.innerText = tipo === 'elite' ? 'Registro Socio Élite 👑' : 'Registro Socio Classic 🔵';
+        
+        ocultarTodo();
+        document.getElementById('view-registro').classList.remove('hidden');
+    }
+
+    window.cancelarRegistro = function() {
+        ocultarTodo();
+        document.getElementById('view-public').classList.remove('hidden');
+    }
+
+    window.guardarRegistro = async function() {
+        const nombre = document.getElementById('reg-nombre').value;
+        const telefono = document.getElementById('reg-telefono').value;
+        const btn = document.getElementById('btn-confirmar-reg');
+
+        if (!nombre || !telefono) {
+            alert("Por favor completa nombre y teléfono");
+            return;
+        }
+
+        btn.innerText = "Guardando...";
+        btn.disabled = true;
+
+        try {
+            // GUARDAR EN FIREBASE
+            const docRef = await addDoc(collection(db, "clientes"), {
+                nombre: nombre,
+                telefono: telefono,
+                tipo: registroTipoSeleccionado,
+                sacos: 0, 
+                fecha_registro: new Date()
+            });
+
+            alert(`¡Registro Exitoso! Tu ID es: ${docRef.id}`);
+            window.location.href = `?id=${docRef.id}`;
+
+        } catch (e) {
+            console.error("Error al registrar: ", e);
+            alert("Hubo un error al guardar. Intenta de nuevo.");
+            btn.innerText = "Confirmar y Crear ID";
+            btn.disabled = false;
+        }
+    }
+
+    // --- LÓGICA GRÁFICA Y UTILIDADES ---
+
+    function actualizarGraficos(n) {
+        n = parseInt(n) || 0;
         let porcentaje = (n / 10) * 100;
         if (porcentaje > 100) porcentaje = 100;
         let faltan = 10 - n;
         let mensaje = faltan <= 0 ? "¡Premio disponible!" : `Faltan ${faltan} sacos para tu premio.`;
 
-        // Classic Updates
+        // Classic
         document.getElementById('texto-sacos-classic').innerHTML = `Llevas <strong>${n} de 10</strong> sacos.`;
         document.getElementById('label-barra-classic').innerText = `${n}/10`;
         document.getElementById('barra-classic').style.width = `${porcentaje}%`;
         document.getElementById('mensaje-falta-classic').innerText = mensaje;
 
-        // Elite Updates
+        // Elite
         document.getElementById('texto-sacos-elite').innerHTML = `Llevas <strong>${n} de 10</strong> sacos.`;
         document.getElementById('label-barra-elite').innerText = `${n}/10`;
         document.getElementById('barra-elite').style.width = `${porcentaje}%`;
     }
 
-    // --- FUNCIONES GLOBALES (Hacerlas accesibles desde HTML) ---
-    
     window.conectarWhatsApp = function(mensaje) {
         let numero = window.WHATSAPP_TIENDA.replace(/\D/g,'');
         let url = `https://wa.me/${numero}?text=${encodeURIComponent(mensaje)}`;
@@ -247,33 +361,12 @@
     }
 
     window.registrarSaco = function(tipoSocio) {
-        let msg = `Hola, soy Socio ${tipoSocio} (ID: ${currentId}). Quiero registrar la compra de un saco y sumar puntos.`;
+        let msg = `Hola, soy Socio ${tipoSocio} (ID: ${currentId}). Quiero registrar un saco.`;
         window.conectarWhatsApp(msg);
     }
 
     window.cerrarSesion = function() {
-        window.location.href = window.location.pathname; // Limpia los parámetros
-    }
-
-    // --- HERRAMIENTA DE REGISTRO (SOLO USO INTERNO) ---
-    // Como no querías botones nuevos, usa esto desde la consola del navegador (F12)
-    // Escribe: registrarNuevoCliente("Juan Perez", "classic", 0)
-    window.registrarNuevoCliente = async function(nombre, tipo, sacosIniciales) {
-        try {
-            const docRef = await addDoc(collection(db, "clientes"), {
-                nombre: nombre,
-                tipo: tipo,   // 'classic' o 'elite'
-                sacos: sacosIniciales,
-                fecha_registro: new Date()
-            });
-            console.log("✅ CLIENTE REGISTRADO CON ÉXITO");
-            console.log("ID ÚNICO GENERADO: ", docRef.id);
-            console.log("LINK PARA EL CLIENTE: ");
-            console.log(`${window.location.origin}${window.location.pathname}?socio=${tipo}&id=${docRef.id}`);
-            alert(`Cliente creado. ID: ${docRef.id}`);
-        } catch (e) {
-            console.error("Error al registrar: ", e);
-        }
+        window.location.href = window.location.pathname.split('?')[0];
     }
 </script>
 
